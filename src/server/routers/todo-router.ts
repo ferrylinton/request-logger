@@ -8,7 +8,7 @@ import * as todoService from '../services/todo-service';
  */
 
 /**
- * Handler for Endpoint GET /api/todoes
+ * Handler for Endpoint GET /todoes
  * @param req {Object} The request.
  * @param req.query.name {String} The name query.
  * @param res {Object} The response.
@@ -16,7 +16,7 @@ import * as todoService from '../services/todo-service';
  */
 const getTodoesHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const todoes = await todoService.find()
+        const todoes = await todoService.find();
         res.status(200).json(todoes);
     } catch (error) {
         next(error);
@@ -24,7 +24,7 @@ const getTodoesHandler = async (req: Request, res: Response, next: NextFunction)
 }
 
 /**
- * Handler for Endpoint POST /api/todoes
+ * Handler for Endpoint POST /todoes
  * @param req {Object} The request.
  * @param req.body.task {String} The task.
  * @param res {Object} The response.
@@ -40,7 +40,7 @@ const postTodoHandler = async (req: Request, res: Response, next: NextFunction) 
 }
 
 /**
- * Handler for Endpoint GET /api/todoes/:_id
+ * Handler for Endpoint GET /todoes/:_id
  * @param req {Object} The request.
  * @param req.params._id {String} Todo Id.
  * @param res {Object} The response.
@@ -60,7 +60,7 @@ const getTodoByIdHandler = async (req: Request, res: Response, next: NextFunctio
 }
 
 /**
- * Handler for Endpoint PUT /api/todoes/:_id
+ * Handler for Endpoint PUT /todoes/:_id
  * @param req {Object} The request.
  * @param req.params._id {String} Todo Id.
  * @param res {Object} The response.
@@ -76,7 +76,7 @@ const putTodoHandler = async (req: Request, res: Response, next: NextFunction) =
 }
 
 /**
- * Handler for Endpoint DELETE /api/todoes/:_id
+ * Handler for Endpoint DELETE /todoes/:_id
  * @param req {Object} The request.
  * @param req.params._id {String} Todo Id.
  * @param res {Object} The response.
@@ -96,10 +96,10 @@ const deleteTodoHandler = async (req: Request, res: Response, next: NextFunction
  */
 const router = express.Router();
 
-router.get('/api/todoes', getTodoesHandler);
-router.post('/api/todoes', postTodoHandler);
-router.get("/api/todoes:_id", getTodoByIdHandler);
-router.put("/api/todoes/:_id", putTodoHandler);
-router.delete("/api/todoes/:_id", deleteTodoHandler);
+router.get('/todoes', getTodoesHandler);
+router.post('/todoes', postTodoHandler);
+router.get("/todoes/:_id", getTodoByIdHandler);
+router.put("/todoes/:_id", putTodoHandler);
+router.delete("/todoes/:_id", deleteTodoHandler);
 
 export default router;

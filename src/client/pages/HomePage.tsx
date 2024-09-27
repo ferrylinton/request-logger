@@ -6,16 +6,19 @@ import { Link } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { TodoItem } from '../components/TodoItem';
 import { useConfirmStore } from "../hooks/confirm-store";
+import { useAuthStore } from "../hooks/auth-store";
 
 export const HomePage = () => {
 
     const intl = useIntl();
 
+    const { token } = useAuthStore();
+
     const { hideConfirm } = useConfirmStore();
 
     const [todoes, setTodoes] = useState<Todo[]>();
 
-    const [total, setTotal] = useState<String>("0");
+    const [total, setTotal] = useState<number>(0);
 
     const updateDataMessage = intl.formatMessage({ id: "updateData" });
 
@@ -23,7 +26,7 @@ export const HomePage = () => {
         todoService.find()
             .then(({ status, data }) => {
                 if (status === 200) {
-                    console.log(data);
+                    setTotal(data.length);
                     setTodoes(data);
                 }
             }).catch(error => {
@@ -34,7 +37,7 @@ export const HomePage = () => {
     const okHandler = async (todo?: Todo) => {
         hideConfirm();
         if(todo){
-            await todoService.update(todo._id as string)
+            await todoService.update(todo.id as string)
         }
         
         loadTodoes();

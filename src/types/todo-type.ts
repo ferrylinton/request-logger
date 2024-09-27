@@ -1,11 +1,12 @@
 import { ObjectId } from "mongodb"
 
 export type Todo = {
-    _id?: ObjectId | String,
+    _id?: ObjectId,
+    id?: string,
     task: string,
     done: boolean,
-    createdAt: Date,
-    updatedAt: Date | null
+    createdAt: string,
+    updatedAt?: string
 }
 
 export type UpdateTodo = {

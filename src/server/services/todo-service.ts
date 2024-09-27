@@ -1,4 +1,4 @@
-import { ObjectId } from 'mongodb';
+import { ObjectId, WithId } from 'mongodb';
 import { getCollection } from '@src/server/utils/mongodb';
 import { Todo, UpdateTodo } from '@src/types/todo-type';
 
@@ -27,15 +27,21 @@ import { Todo, UpdateTodo } from '@src/types/todo-type';
  */
 const TODO_COLLECTION = 'todoes';
 
+export const mapTodo = (todo: Todo | WithId<Todo>): Omit<Todo, "_id"> => {
+	const { _id, id, ...rest } = todo;
+	return { id: _id?.toHexString(), ...rest }
+}
+
 /**
  * Find multiple Todo documents
  *
  * @returns Array of {@link Todo} documetns.
  *
  */
-export const find = async () => {
+export const find = async (): Promise<Array<Omit<Todo, "_id">>> => {
 	const todoCollection = await getCollection<Todo>(TODO_COLLECTION);
-	return todoCollection.find().toArray();
+	const todoes = await todoCollection.find().toArray();
+	return todoes.map(todo => mapTodo(todo));
 };
 
 /**
@@ -46,7 +52,8 @@ export const find = async () => {
  */
 export const findById = async (_id: string) => {
 	const todoCollection = await getCollection<Todo>(TODO_COLLECTION);
-	return await todoCollection.findOne({ _id: new ObjectId(_id) });
+	const todo = await todoCollection.findOne({ _id: new ObjectId(_id) });
+	return todo ? mapTodo(todo) : null;
 };
 
 /**
@@ -59,8 +66,7 @@ export const create = async (task: string) => {
 	const todo: Todo = {
 		task,
 		done: false,
-		createdAt: new Date(),
-		updatedAt: null,
+		createdAt: (new Date()).toUTCString()
 	};
 	const todoCollection = await getCollection<Todo>(TODO_COLLECTION);
 	return await todoCollection.insertOne(todo);
@@ -77,9 +83,9 @@ export const create = async (task: string) => {
  */
 export const update = async (_id: string) => {
 	const todoCollection = await getCollection<Todo>(TODO_COLLECTION);
-	const updatedAt = new Date();
+	const updatedAt = (new Date()).toUTCString();
 	const done = true;
-	return await todoCollection.updateOne({ _id: new ObjectId(_id) }, { $set: { done , updatedAt} });
+	return await todoCollection.updateOne({ _id: new ObjectId(_id) }, { $set: { done, updatedAt } });
 };
 
 /**

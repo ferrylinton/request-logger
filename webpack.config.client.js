@@ -1,8 +1,25 @@
 const path = require("path");
+const fs = require('fs');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { config } = require("dotenv");
+
+
+function generateJSFilename({ hash, chunk }) {
+    const filename = `${chunk.name}.${hash.slice(0, 8)}.js`;
+    const jsFolder = path.resolve(__dirname, "dist", "assets", "js");
+
+    try {
+        if (fs.existsSync(jsFolder)) {
+            fs.rmSync(jsFolder, { recursive: true, force: true });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return `assets/js/${filename}`;
+}
 
 module.exports = (_env, argv) => {
 
@@ -11,8 +28,8 @@ module.exports = (_env, argv) => {
         entry: "./src/client/index.tsx",
 
         output: {
-            filename: "assets/js/[name].[fullhash].js",
-            chunkFilename: 'assets/js/[name].[contenthash].bundle.js',
+            filename: generateJSFilename,
+            chunkFilename: generateJSFilename,
             path: path.resolve(__dirname, "dist"),
             publicPath: "/"
         },

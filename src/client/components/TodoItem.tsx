@@ -30,7 +30,7 @@ export const TodoItem = ({ index, todo }: Props) => {
                         <button className="btn btn-primary" onClick={() => showConfirm(todo)}>
                             <CheckIcon />
                         </button>
-                        <Link to={"/detail/" + todo._id} className="btn btn-secondary">
+                        <Link to={"/detail/" + todo.id} className="btn btn-secondary">
                             <EyeIcon />
                         </Link>
                     </div>

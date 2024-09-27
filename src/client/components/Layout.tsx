@@ -1,9 +1,9 @@
 import { PropsWithChildren } from 'react';
-import { Link, Outlet } from 'react-router-dom';
-import { LocaleProvider } from '../providers/locale-provider';
-import { FormattedMessage } from 'react-intl';
+import { Outlet } from 'react-router-dom';
+import { AppProvider } from '@src/client/providers/app-provider';
 import { Sidebar } from './Sidebar';
-
+import { LocaleMenu } from './LocaleMenu';
+import { ToggleTheme } from './ToggleTheme';
 
 
 export default function Layout({ children }: PropsWithChildren) {
@@ -13,7 +13,7 @@ export default function Layout({ children }: PropsWithChildren) {
     }
 
     return (
-        <LocaleProvider>
+        <AppProvider>
             <Sidebar />
             <main className="main">
                 <nav className="nav">
@@ -24,13 +24,16 @@ export default function Layout({ children }: PropsWithChildren) {
                             <span></span>
                         </button>
                         <div className="logo"><a href="/">TODO</a></div>
-
+                        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", margin: "0 0.5rem" }}>
+                            <LocaleMenu/>
+                            <ToggleTheme/>
+                        </div>
                     </div>
                 </nav>
                 <div className="main-content">
                     <Outlet />
                 </div>
             </main>
-        </LocaleProvider>
+        </AppProvider>
     )
 }
