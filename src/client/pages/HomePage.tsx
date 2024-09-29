@@ -16,10 +16,12 @@ export const HomePage = () => {
     const loadTodoes = () => {
         todoService.find()
             .then(({ status, data }) => {
-                if (status === 200) {
-                    setTotal(data.total);
-                    setTodoes(data.todoes);
-                }
+                setTimeout(() => {
+                    if (status === 200) {
+                        setTotal(data.total);
+                        setTodoes(data.todoes);
+                    }
+                }, 500);
             }).catch(error => {
                 console.log(error);
             });
@@ -49,6 +51,23 @@ export const HomePage = () => {
                                     index={index}
                                     todo={todo}
                                 />
+                            })
+                        }
+                        {
+                            !todoes && ["1", "2", "3"].map((num) => {
+                                return <tr key={num}>
+                                    <td>{num}</td>
+                                    <td>
+                                        <span className="skeleton-line"></span>
+                                        <em className="skeleton-line" style={{ width: 100 }}></em>
+                                    </td>
+                                    <td>
+                                        <div className="action">
+                                            <div className="skeleton-square"></div>
+                                            <div className="skeleton-square"></div>
+                                        </div>
+                                    </td>
+                                </tr>
                             })
                         }
                     </tbody>

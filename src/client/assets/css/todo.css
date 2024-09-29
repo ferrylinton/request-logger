@@ -13,7 +13,7 @@
     justify-content: space-between;
     width: 100%;
     padding: 0 0.5rem;
-    margin: 2rem 0 0.5rem 0;
+    margin: 4rem 0 0.5rem 0;
 }
 
 .todo-list-toolbar .total {
@@ -118,6 +118,7 @@
 }
 
 .todo-detail tr th {
+    width: 140px;
     font-weight: bold;
     text-align: right;
     padding: 0.5rem;
@@ -126,10 +127,6 @@
 .todo-detail tr td {
     text-align: left;
     padding: 0.5rem;
-}
-
-.todo-detail tr th {
-    min-width: 130px;
 }
 
 .todo-list tr.new-todo {

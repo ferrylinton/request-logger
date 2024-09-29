@@ -3,7 +3,6 @@ import { Todo } from '@src/types/todo-type';
 import { useEffect, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 import { Link, useParams } from 'react-router-dom';
-import { ConfirmDialog } from '../components/ConfirmDialog';
 import { useConfirmStore } from '../hooks/confirm-store';
 
 export const DetailPage = () => {
@@ -23,10 +22,13 @@ export const DetailPage = () => {
   const loadTodo = (id: string | undefined) => {
     todoService.findById(id as string)
       .then(({ status, data }) => {
-        if (status === 200) {
-          console.log(data);
-          setTodo(data);
-        }
+
+        setTimeout(() => {
+          if (status === 200) {
+            setTodo(data);
+          }
+        }, 500);
+
       }).catch(error => {
         console.log(error);
       });
@@ -40,32 +42,50 @@ export const DetailPage = () => {
 
   return (
     <>
-      {todo && <div className="todo-detail">
+      <div className="todo-detail">
         <table>
-          <tbody>
-            <tr>
-              <th><FormattedMessage id="id" /></th>
-              <td>{todo.id}</td>
-            </tr>
-            <tr>
-              <th><FormattedMessage id="task" /></th>
-              <td className="break">{todo.task}</td>
-            </tr>
-            <tr>
-              <th><FormattedMessage id="done" /></th>
-              <td>{intl.formatMessage({ id: todo.done ? "yes" : "no" })}</td>
-            </tr>
-            <tr>
-              <th><FormattedMessage id="createdAt" /></th>
-              <td><FormattedDate value={new Date(todo.createdAt)} /></td>
-            </tr>
-            <tr>
-              <th><FormattedMessage id="updatedAt" /></th>
-              <td>{todo.updatedAt ? intl.formatDate(todo.updatedAt) : '-'}</td>
-            </tr>
-          </tbody>
+          {
+            !todo && <tbody>
+              {
+                ["id", "task", "done", "createdAt", "updatedAt"].map((txt) => {
+                  return <tr key={txt}>
+                    <th>
+                      <FormattedMessage id={txt} />
+                    </th>
+                    <td>
+                      <div className="skeleton-line"></div>
+                    </td>
+                  </tr>
+                })
+              }
+            </tbody>
+          }
+          {
+            todo && <tbody>
+              <tr>
+                <th><FormattedMessage id="id" /></th>
+                <td>{todo.id}</td>
+              </tr>
+              <tr>
+                <th><FormattedMessage id="task" /></th>
+                <td className="break">{todo.task}</td>
+              </tr>
+              <tr>
+                <th><FormattedMessage id="done" /></th>
+                <td>{intl.formatMessage({ id: todo.done ? "yes" : "no" })}</td>
+              </tr>
+              <tr>
+                <th><FormattedMessage id="createdAt" /></th>
+                <td><FormattedDate value={new Date(todo.createdAt)} /></td>
+              </tr>
+              <tr>
+                <th><FormattedMessage id="updatedAt" /></th>
+                <td>{todo.updatedAt ? intl.formatDate(todo.updatedAt) : '-'}</td>
+              </tr>
+            </tbody>
+          }
         </table>
-      </div>}
+      </div>
 
       <section className="buttons">
         <Link to={"/"} className='btn btn-secondary'>

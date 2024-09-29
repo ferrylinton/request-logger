@@ -25,6 +25,8 @@ if (!process.env.MONGODB_DATABASE) {
 export const NODE_ENV = process.env.NODE_ENV || 'development';
 export const PORT = process.env.PORT || '5001';
 
+export const JWT_SECRET = process.env.JWT_SECRET || '268980feac54d920e3c147e3a3d42179393102d3dea5e7e31c282bc9fd76dffe'
+
 export const MONGODB_URL = process.env.MONGODB_URL;
 export const MONGODB_AUTH_SOURCE = process.env.MONGODB_AUTH_SOURCE;
 export const MONGODB_USERNAME = process.env.MONGODB_USERNAME;

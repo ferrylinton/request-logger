@@ -79,13 +79,6 @@ module.exports = (_env, argv) => {
                     generator: {
                         filename: "assets/image/[name].[hash:8][ext]",
                     }
-                },
-                {
-                    test: /favicon.ico/,
-                    type: "asset/resource",
-                    generator: {
-                        filename: "favicon.ico"
-                    },
                 }
             ]
         },
@@ -113,6 +106,7 @@ module.exports = (_env, argv) => {
             new HtmlWebpackPlugin({
                 template: "./src/client/index.html",
                 filename: "index.html",
+                favicon: "./src/favicon.ico",
                 inject: false,
                 minify: false
             }),
