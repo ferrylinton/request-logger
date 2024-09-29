@@ -1,14 +1,26 @@
-import React, { ChangeEvent, useState } from 'react'
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, replace, useNavigate } from 'react-router-dom';
 import * as todoService from "@src/client/services/todo-service";
-import { AxiosError } from 'axios';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAlertStore } from '../hooks/alert-store';
+
+export interface ErrorValidation {
+  code: string
+  minimum: number
+  type: string
+  inclusive: boolean
+  exact: boolean
+  message: string
+  path: string[]
+}
 
 export const AddFormPage = () => {
 
   const intl = useIntl();
 
   const navigate = useNavigate();
+
+  const { showAlert, hideAlert } = useAlertStore();
 
   const [task, setTask] = useState<string>('')
 
@@ -20,19 +32,36 @@ export const AddFormPage = () => {
     event.preventDefault();
 
     todoService.create(task)
-      .then(({ status, data }) => {
+      .then(({ status }) => {
         if (status === 201) {
+          showAlert(intl.formatMessage({ id: "dataIsSaved" }, { task }))
           navigate("/", { replace: true });
         }
-      }).catch((error: AxiosError) => {
+      }).catch((error: any) => {
         console.log(error);
+
+        if (error.response?.data?.errorMaxData) {
+          showAlert(intl.formatMessage({ id: error.response.data.errorMaxData }), "danger");
+        } else if (error.response?.data?.length > 0) {
+          const errorValidations = error.response?.data as ErrorValidation[];
+          if (errorValidations[0]) {
+            showAlert(intl.formatMessage({ id: errorValidations[0].message }), "danger");
+          }
+        } else {
+          showAlert(error.message, "danger");
+        }
+
       });
 
     setTask('');
   };
 
+  useEffect(() => {
+    hideAlert();
+  }, [])
+
   return (
-    <div className="container">
+    <>
       <form
         onSubmit={handleSubmit}
         noValidate
@@ -60,6 +89,6 @@ export const AddFormPage = () => {
         </section>
 
       </form>
-    </div>
+    </>
   )
 }

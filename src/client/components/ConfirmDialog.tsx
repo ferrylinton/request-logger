@@ -1,16 +1,38 @@
-import clsx from 'clsx';
-import { FormattedMessage } from 'react-intl';
 import { useConfirmStore } from '@src/client/hooks/confirm-store';
-import { Todo } from '@src/types/todo-type';
+import * as todoService from "@src/client/services/todo-service";
+import clsx from 'clsx';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useNavigate } from 'react-router-dom';
+import { useAlertStore } from '../hooks/alert-store';
 
-type Props = {
-    message: string,
-    okHandler: (todo?: Todo) => void
-}
+export const ConfirmDialog = () => {
 
-export const ConfirmDialog = ({ message, okHandler }: Props) => {
+    const intl = useIntl();
 
-    const { todo, show, hideConfirm } = useConfirmStore();
+    const navigate = useNavigate();
+
+    const { showAlert } = useAlertStore();
+
+    const { isDelete, message, todo, show, hideConfirm } = useConfirmStore();
+
+    const okHandler = async () => {
+        try {
+            if (isDelete) {
+                await todoService.deleteById(todo?.id as string);
+                showAlert(intl.formatMessage({ id: "dataIsDeleted" }, { task: todo?.task }) as string)
+            } else {
+                await todoService.update(todo?.id as string);
+                showAlert(intl.formatMessage({ id: "dataIsUpdated" }, { task: todo?.task }) as string)
+            }
+
+            hideConfirm();
+            navigate("/", { replace: true });
+        } catch (error: any) {
+            console.log(error);
+            hideConfirm();
+            showAlert(error.response.data.message, "danger");
+        }
+    }
 
     return (
         <div className={clsx("confirm", show && "show")}>
@@ -20,7 +42,7 @@ export const ConfirmDialog = ({ message, okHandler }: Props) => {
                     <button className="btn btn-secondary" onClick={() => hideConfirm()}>
                         <FormattedMessage id="cancel" />
                     </button>
-                    <button className="btn btn-primary" onClick={() => okHandler(todo)}>
+                    <button className="btn btn-primary" onClick={() => okHandler()}>
                         <FormattedMessage id="ok" />
                     </button>
                 </section>

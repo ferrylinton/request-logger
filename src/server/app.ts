@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import todoRouter from '@src/server/routers/todo-router';
 import { getClientIp } from './utils/ip-util';
 import { authMiddleware } from './middlewares/auth-minddleware';
+import { restErrorHandler } from './middlewares/rest-middleware';
 
 let indexContent: String;
 const app = express();
@@ -23,6 +24,7 @@ app.get("/api/ping", (_, res) => {
 
 // map router to express application
 app.use('/api', todoRouter);
+app.use('/api', restErrorHandler);
 
 app.get('*', (req, res) => {
   const clientIp = getClientIp(req);

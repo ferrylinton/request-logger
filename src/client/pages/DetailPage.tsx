@@ -1,36 +1,24 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom';
 import * as todoService from "@src/client/services/todo-service";
 import { Todo } from '@src/types/todo-type';
+import { useEffect, useState } from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
-import { useConfirmStore } from '../hooks/confirm-store';
+import { Link, useParams } from 'react-router-dom';
 import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useConfirmStore } from '../hooks/confirm-store';
 
 export const DetailPage = () => {
 
   const intl = useIntl();
 
-  const navigate = useNavigate();
-
-  const { hideConfirm, showConfirm } = useConfirmStore();
+  const { showConfirm } = useConfirmStore();
 
   const { id } = useParams();
 
   const [todo, setTodo] = useState<Todo | null>(null);
 
-  const deleteDataMessage = intl.formatMessage({ id: "deleteData" });
-
   useEffect(() => {
     loadTodo(id);
   }, [id]);
-
-  const okHandler = async (todo?: Todo) => {
-    hideConfirm();
-    if (todo) {
-      await todoService.deleteById(todo.id as string);
-      navigate("/")
-    }
-  }
 
   const loadTodo = (id: string | undefined) => {
     todoService.findById(id as string)
@@ -44,52 +32,51 @@ export const DetailPage = () => {
       });
   }
 
-  const isDone = (done: boolean) => {
-    return intl.formatMessage({ id: done ? "yes" : "no" });
+  const onClickDelete = () => {
+    if (todo) {
+      showConfirm(intl.formatMessage({ id: "deleteData" }), todo, true);
+    }
   }
 
   return (
     <>
-      <div className="container">
-        {todo && <div className="todo-detail">
-          <table>
-            <tbody>
-              <tr>
-                <th><FormattedMessage id="id" /></th>
-                <td>{todo.id}</td>
-              </tr>
-              <tr>
-                <th><FormattedMessage id="task" /></th>
-                <td className="break">{todo.task}</td>
-              </tr>
-              <tr>
-                <th><FormattedMessage id="done" /></th>
-                <td>{intl.formatMessage({ id: todo.done ? "yes" : "no" })}</td>
-              </tr>
-              <tr>
-                <th><FormattedMessage id="createdAt" /></th>
-                <td><FormattedDate value={new Date(todo.createdAt)} /></td>
-              </tr>
-              <tr>
-                <th><FormattedMessage id="updatedAt" /></th>
-                <td>{todo.updatedAt ? intl.formatDate(todo.updatedAt) : '-'}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>}
+      {todo && <div className="todo-detail">
+        <table>
+          <tbody>
+            <tr>
+              <th><FormattedMessage id="id" /></th>
+              <td>{todo.id}</td>
+            </tr>
+            <tr>
+              <th><FormattedMessage id="task" /></th>
+              <td className="break">{todo.task}</td>
+            </tr>
+            <tr>
+              <th><FormattedMessage id="done" /></th>
+              <td>{intl.formatMessage({ id: todo.done ? "yes" : "no" })}</td>
+            </tr>
+            <tr>
+              <th><FormattedMessage id="createdAt" /></th>
+              <td><FormattedDate value={new Date(todo.createdAt)} /></td>
+            </tr>
+            <tr>
+              <th><FormattedMessage id="updatedAt" /></th>
+              <td>{todo.updatedAt ? intl.formatDate(todo.updatedAt) : '-'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>}
 
-        <section className="buttons">
-          <Link to={"/"} className='btn btn-secondary'>
-            <FormattedMessage id="back" />
-          </Link>
-          {todo && <button type="button" className="btn btn-danger" onClick={() => showConfirm(todo)}>
-            <FormattedMessage id="delete" />
-          </button>}
+      <section className="buttons">
+        <Link to={"/"} className='btn btn-secondary'>
+          <FormattedMessage id="back" />
+        </Link>
+        {todo && <button type="button" className="btn btn-danger" onClick={onClickDelete}>
+          <FormattedMessage id="delete" />
+        </button>}
 
-        </section>
+      </section>
 
-      </div>
-      <ConfirmDialog message={deleteDataMessage} okHandler={okHandler} />
     </>
   )
 }

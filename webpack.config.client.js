@@ -3,7 +3,8 @@ const fs = require('fs');
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const { config } = require("dotenv");
+const { PurgeCSSPlugin } = require('purgecss-webpack-plugin');
+const glob = require('glob');
 
 
 function generateJSFilename({ hash, chunk }) {
@@ -19,6 +20,21 @@ function generateJSFilename({ hash, chunk }) {
     }
 
     return `assets/js/${filename}`;
+}
+
+function generateCSSFilename({ hash, chunk }) {
+    const filename = `${chunk.name}.${hash.slice(0, 8)}.css`;
+    const cssFolder = path.resolve(__dirname, "dist", "assets", "css");
+
+    try {
+        if (fs.existsSync(cssFolder)) {
+            fs.rmSync(cssFolder, { recursive: true, force: true });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+
+    return `assets/css/${filename}`;
 }
 
 module.exports = (_env, argv) => {
@@ -83,6 +99,12 @@ module.exports = (_env, argv) => {
                         name: 'vendor-react',
                         chunks: 'all',
                     },
+                    styles: {
+                        name: "styles",
+                        test: /\.css$/,
+                        chunks: "all",
+                        enforce: true,
+                    },
                 },
             },
         },
@@ -95,7 +117,10 @@ module.exports = (_env, argv) => {
                 minify: false
             }),
             new MiniCssExtractPlugin({
-                filename: "assets/css/[name].[contenthash].css"
+                filename: generateCSSFilename
+            }),
+            new PurgeCSSPlugin({
+                paths: glob.sync(`${path.join(__dirname, 'src', 'client')}/**/*`, { nodir: true }),
             }),
         ],
 

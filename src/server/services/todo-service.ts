@@ -27,6 +27,11 @@ import { Todo, UpdateTodo } from '@src/types/todo-type';
  */
 const TODO_COLLECTION = 'todoes';
 
+type FindResult = {
+	todoes: Array<Omit<Todo, "_id">>,
+	total: number
+}
+
 export const mapTodo = (todo: Todo | WithId<Todo>): Omit<Todo, "_id"> => {
 	const { _id, id, ...rest } = todo;
 	return { id: _id?.toHexString(), ...rest }
@@ -38,10 +43,19 @@ export const mapTodo = (todo: Todo | WithId<Todo>): Omit<Todo, "_id"> => {
  * @returns Array of {@link Todo} documetns.
  *
  */
-export const find = async (): Promise<Array<Omit<Todo, "_id">>> => {
+export const find = async (): Promise<FindResult> => {
 	const todoCollection = await getCollection<Todo>(TODO_COLLECTION);
-	const todoes = await todoCollection.find().toArray();
-	return todoes.map(todo => mapTodo(todo));
+	const todoes = await todoCollection.find().sort({ createdAt: -1 }).toArray();
+	const total = await todoCollection.countDocuments();
+	return {
+		todoes: todoes.map(todo => mapTodo(todo)),
+		total
+	};
+};
+
+export const count = async (): Promise<number> => {
+	const todoCollection = await getCollection<Todo>(TODO_COLLECTION);
+	return await todoCollection.countDocuments();
 };
 
 /**

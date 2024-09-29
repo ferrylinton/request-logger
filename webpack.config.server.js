@@ -23,7 +23,7 @@ module.exports = (_env, argv) => {
                 "@src": path.resolve(__dirname, "src"),
             },
 
-            extensions: [".ts", ".js"],
+            extensions: ["", ".ts", ".js", ".node"]
         },
 
         module: {
@@ -33,12 +33,16 @@ module.exports = (_env, argv) => {
                     loader: "ts-loader",
                     options: { configFile: 'tsconfig.server.json' },
                     exclude: [path.resolve(__dirname, "src", "client"), path.resolve(__dirname, 'node_modules')],
+                },
+                {
+                    test: /\.node$/,
+                    loader: "node-loader"
                 }
             ],
         },
 
         plugins: [
-            new webpack.ContextReplacementPlugin(/express/)
+            new webpack.ContextReplacementPlugin(/express/, /mongodb/)
         ],
     }
 }

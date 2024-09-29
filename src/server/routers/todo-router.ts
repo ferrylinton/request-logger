@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
-import * as todoService from '../services/todo-service';
+import * as todoService from '@src/server/services/todo-service';
+import { CreateTodoSchema } from '@src/server/validations/TodoSchema';
 
 /**
  * A router that handles Todo REST API
@@ -32,8 +33,25 @@ const getTodoesHandler = async (req: Request, res: Response, next: NextFunction)
  */
 const postTodoHandler = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const todo = await todoService.create(req.body.task);
-        res.status(201).json(todo);
+        const total = await todoService.count();
+
+        if (total >= 20) {
+            res.status(400).json({
+                errorMaxData: "errorMaxData"
+            });
+        } else {
+            const validation = CreateTodoSchema.safeParse(req.body);
+
+            if (validation.success) {
+                const todo = await todoService.create(req.body.task);
+                res.status(201).json(todo);
+            } else {
+                const errorValidations = validation.error.issues;
+                res.status(400).json(errorValidations);
+            }
+        }
+
+
     } catch (error) {
         next(error);
     }

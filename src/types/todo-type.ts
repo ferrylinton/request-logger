@@ -13,3 +13,8 @@ export type UpdateTodo = {
     task?: string,
     done?: boolean
 }
+
+export type FindResult = {
+    todoes: Todo[],
+    total: number
+}

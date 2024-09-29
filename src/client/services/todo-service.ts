@@ -1,16 +1,16 @@
 import { AxiosResponse } from "axios";
 import { axiosInstance } from "@src/client/utils/axios";
-import { Todo } from "@src/types/todo-type";
+import { FindResult, Todo } from "@src/types/todo-type";
 import { getTokenFromMeta } from "../utils/token";
 
 
 
-export async function find(): Promise<AxiosResponse<Todo[]>> {
+export async function find(): Promise<AxiosResponse<FindResult>> {
     const headers = {
         Authorization: "Bearer " + getTokenFromMeta()
     }
     
-    return await axiosInstance.get<Todo[]>(`/api/todoes`, { headers })
+    return await axiosInstance.get<FindResult>(`/api/todoes`, { headers })
 };
 
 export async function findById(id: string) {
